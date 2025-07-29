@@ -122,20 +122,4 @@ backend/
 
 本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
 
-## 🙏 致谢
-
-- OpenAI 提供的强大AI模型
-- Tavily 提供的搜索API
-- LangChain 提供的AI应用框架
-- Gradio 提供的用户界面框架
-
-## 📞 联系方式
-
-如有问题或建议，请通过以下方式联系：
-
-- 项目Issues: [GitHub Issues](https://github.com/XploreXing/AI-Research-Assistant/issues)
-- 邮箱: [你的邮箱地址]
-
----
-
 ⭐ 如果这个项目对你有帮助，请给它一个星标！ 

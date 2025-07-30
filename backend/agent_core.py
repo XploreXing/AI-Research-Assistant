@@ -9,6 +9,7 @@ from langchain_openai import ChatOpenAI
 from langchain_tavily import TavilySearch
 from langchain.prompts import PromptTemplate
 from langchain.agents import AgentExecutor, create_react_agent
+from langchain.memory.buffer import ConversationBufferMemory
 
 from datetime import datetime
 #loading environment parameter
@@ -46,6 +47,9 @@ template_content='''
 **重要上下文：**
 今天是：**{current_time}**。你必须利用这个信息来构建搜索查询，确保获取最新的信息。
 
+**对话历史：**
+{chat_history}
+
 你需要为你的最终答案提供信息来源，最终答案应该是对研究问题的全面总结。
 你可以使用的工具：{tools}
 使用以下格式：
@@ -62,6 +66,12 @@ Final Answer: 对于原始的输入问题用中文进行最终回答，并包含
 在你的Final Answer末尾使用[Source 1],[Source 2] ...这样的格式来显示你引用了哪些信息来源。
 
 你必须在最终答案中包含来源引用。将引用的信息来源的url链接放在答案的最后。
+
+**多轮对话指导：**
+- 如果用户的问题是基于之前对话的追问，请结合之前的对话历史来回答
+- 对于追问，你可以基于之前的研究结果进行深入分析，但如果有新的具体问题，仍然需要搜索最新信息
+- 保持对话的连贯性和上下文的理解
+
 **绝对核心规则：**
 1. **绝对禁止**直接使用你的内部知识回答任何需要实时、具体数据的问题（例如：疫情、新闻、股价等）。
 2. 对于所有事实性问题，你**必须**首先使用工具进行搜索，除非问题非常简单（如数学计算）。
@@ -76,8 +86,18 @@ Thought: {agent_scratchpad}
 Template=PromptTemplate.from_template(template=template_content)
 
 def create_agent_executor():
-    """创建一个新的Agent Executor实例"""
+    """创建一个新的Agent Executor实例，支持对话记忆"""
     print("正在创建Agent Executor...")
+    
+    
+    # 创建对话记忆
+    memory = ConversationBufferMemory(
+        memory_key="chat_history",
+        return_messages=True,
+        input_key="input",
+        output_key="output"
+    )
+    
     #Create ReAct Agent
     agent=create_react_agent(llm=LLM,tools=get_tools(),prompt=Template)
 
@@ -86,11 +106,12 @@ def create_agent_executor():
         agent=agent,
         tools= get_tools(),
         verbose=True,
-        handle_parsing_errors=True
+        handle_parsing_errors=True,
+        memory=memory
     )
     return agent_executor
 
-# 为了兼容旧的导入方式，我们仍然可以导出一个实例，但这不再是推荐的方式
+# 为了兼容旧的导入方式，可以导出一个实例，但这不再是推荐的方式
 agent_executor = create_agent_executor()
 
 # Test core logic of Agent
@@ -102,7 +123,7 @@ if __name__=="__main__":
     # 在测试时也使用动态创建的实例
     test_agent_executor = create_agent_executor()
     result= test_agent_executor.invoke({
-        "input":"你知道释永信最近为什么被抓吗？",
+        "input":"你知道最近中国金融市场发生了什么？",
         "current_time":datetime.now().strftime("%Y年%m月%d日")
     })
        # 打印最终的输出结果

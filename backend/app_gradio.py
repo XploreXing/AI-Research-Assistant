@@ -34,7 +34,6 @@ def ensure_session_exists():
         else:
             logger.error("Failed to Create New Session")
 
-        ##这里不用做防御性设计吗？这个函数不用任何返回值？
 
 #定义gradio中要用到的接口函数
 async def research_interface(topic, is_follow_up=False):#默认初始问题而非追问

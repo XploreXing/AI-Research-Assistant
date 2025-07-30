@@ -111,9 +111,6 @@ def create_agent_executor():
     )
     return agent_executor
 
-# 为了兼容旧的导入方式，可以导出一个实例，但这不再是推荐的方式
-agent_executor = create_agent_executor()
-
 # Test core logic of Agent
 
 if __name__=="__main__":

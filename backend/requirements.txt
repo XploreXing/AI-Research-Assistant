@@ -60,3 +60,6 @@ zstandard==0.23.0
 
 gradio==5.38.2
 gradio-client==1.11.0
+
+# Word文档导出支持
+pypandoc==1.13

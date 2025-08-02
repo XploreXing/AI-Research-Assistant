@@ -3,8 +3,11 @@ from ssl_config import configure_ssl
 import gradio as gr
 from datetime import datetime
 from agent_core import create_agent_executor
-from conversation_manager_manual import ConversationManager,ConversationTimer
+from conversation_manager import ConversationManager,ConversationTimer
 import logging
+import re
+import pypandoc
+import os
 
 #Configure SSL
 logging.basicConfig(level=logging.INFO)
@@ -91,6 +94,7 @@ async def follow_up_question(follow_up_topic:str):
     
 #定义几个按钮函数 清空对话， 导出对话， 获取对话统计
 
+
 def clear_conversation():
     conversation_manager.clear_session()
 
@@ -102,6 +106,44 @@ def clear_conversation():
 
 def export_conversation():
     return conversation_manager.export_session()
+
+def markdown_to_docx(md_text, followup_text=None):
+    """
+    将markdown文本转换为docx文件
+    Args:
+        md_text: 主要研究结果文本
+        followup_text: 追问回答文本 default is None
+    """
+    try:
+        # 合并两个文本内容
+        combined_text = ""
+        if md_text and md_text.strip():
+            combined_text += f"# 主要研究结果\n\n{md_text}\n\n"
+        if followup_text and followup_text.strip():
+            combined_text += f"# 追问回答\n\n{followup_text}\n\n"
+        
+        if not combined_text.strip():
+            return None, "没有可导出的内容"
+    
+        backend_dir = os.path.dirname(os.path.abspath(__file__))
+        data_dir = os.path.join(backend_dir, "data")
+        output_dir = os.path.join(data_dir, "generated_reports")
+        os.makedirs(output_dir, exist_ok=True)
+    
+        timestamp=datetime.now().strftime("%Y%m%d")
+        file_name=f"Report_{timestamp}.docx"
+        output_path=os.path.join(output_dir,file_name)
+        #generate file name
+        pypandoc.convert_text(combined_text,"docx",format="md",outputfile=output_path)
+        #save to temp file
+        if os.path.exists(output_path):
+            print(f"Saved report to {output_path}")
+            logger.info(f"Saved report to {output_path}")
+            return output_path
+    except Exception as e:
+        raise gr.Error(f"Failed to export report")
+   
+
 
 def get_conversation_stats():
     session=conversation_manager.get_active_session()
@@ -163,7 +205,8 @@ with gr.Blocks(title="AI research assistant - multiturn conversation",theme=gr.t
                 clear_btn=gr.Button("🧹清空对话",variant="secondary")
                 export_btn=gr.Button("🫗 导出对话",variant="secondary")
                 stats_btn=gr.Button("📊 对话统计",variant="secondary")
-
+                docx_btn=gr.Button("📄 导出为Docx",variant="secondary")
+                docx_output=gr.File(label="导出文件",interactive=False)
             export_result=gr.Textbox(label="操作结果",interactive=False)
 
         with gr.Column(scale=1):
@@ -209,6 +252,11 @@ with gr.Blocks(title="AI research assistant - multiturn conversation",theme=gr.t
                 inputs=[],
                 outputs=[export_result]
             )
+        docx_btn.click(
+            fn=markdown_to_docx,
+            inputs=[main_output,followup_output],
+            outputs=docx_output
+        )
 if __name__=="__main__":
     iface.queue()
     iface.launch()

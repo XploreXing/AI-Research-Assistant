@@ -12,31 +12,45 @@
 - 💬 **多轮对话**: 支持深度追问和连续对话
 - 📈 **会话管理**: 完整的对话历史记录和统计
 - 🗂️ **数据导出**: 支持对话历史导出为JSON格式
+- 📄 **Word文档导出**: 支持将研究结果导出为.docx格式
+- 🔒 **SSL安全配置**: 内置SSL配置，提高数据传输安全性
+- 📚 **学术搜索**: 集成Arxiv学术论文搜索工具
+- 💹 **财经数据**: 集成Yahoo Finance财经新闻工具
+- 🇨🇳 **国产大模型**: 支持SiliconFlow平台，使用Qwen3-235B模型
 
 ## 🆕 版本说明
 
-### 最新优化版本 
-- **文件**: `app_gradio.py` + `conversation_manager.py`
+### 最新优化版本 (v2.0)
+- **文件**: `app_gradio.py` + `conversation_manager.py` + `agent_core.py`
 - **特点**: 
   - 更清晰的代码结构和注释
   - 改进的UI设计，使用Glass主题
   - 优化的会话管理和计时功能
   - 更好的错误处理和日志记录
   - 支持自定义数据目录导出
+  - **新增Word文档导出功能** - 一键导出研究结果为.docx格式
+  - **新增SSL安全配置** - 提高数据传输安全性
+  - **新增多工具集成** - Yahoo Finance财经数据 + Arxiv学术搜索
+  - **新增国产大模型支持** - SiliconFlow平台 + Qwen3-235B模型
+  - **增强会话统计** - 详细的处理时间、错误统计等
+  - **新增测试文件** - 完善的功能测试和验证
 
 ## 🛠️ 技术栈
 
 - **后端框架**: FastAPI + Gradio
-- **AI模型**: OpenAI GPT + LangChain
-- **搜索引擎**: Tavily API
+- **AI模型**: OpenAI GPT + SiliconFlow Qwen3-235B + LangChain
+- **搜索引擎**: Tavily API + Yahoo Finance + Arxiv
+- **文档处理**: pypandoc (Markdown转Word)
 - **包管理**: uv (快速Python包管理器)
 - **环境管理**: Conda
+- **安全配置**: SSL/TLS支持
 
 ## 📋 系统要求
 
 - Python 3.11+
 - Conda 或 Miniconda
 - 稳定的网络连接
+- Pandoc (用于Word文档导出)
 
 ## 🚀 快速开始
 
@@ -70,7 +84,20 @@ uv pip install -r requirements.txt
 pip install -r requirements.txt
 ```
 
-### 4. 配置环境变量
+### 4. 安装Pandoc (用于Word文档导出)
+
+```bash
+# macOS
+brew install pandoc
+
+# Ubuntu/Debian
+sudo apt-get install pandoc
+
+# Windows
+# 从 https://pandoc.org/installing.html 下载安装包
+```
+
+### 5. 配置环境变量
 
 复制环境变量模板文件：
 ```bash
@@ -84,12 +111,11 @@ TAVILY_API_KEY="your_tavily_api_key_here"
 SILICONFLOW_API_KEY="your_siliconflow_api_key_here"
 ```
 
-### 5. 启动应用
+### 6. 启动应用
 
 ```bash
 # 启动Gradio界面
 python app_gradio.py
-
 ```
 
 ## 📖 使用方法
@@ -100,6 +126,7 @@ python app_gradio.py
 4. 查看生成的研究报告，包含最新的信息来源和详细分析
 5. 使用追问功能进行深度对话
 6. 查看对话历史和统计信息
+7. **使用Word导出功能** - 点击"📄 导出为Docx"按钮将研究结果导出为Word文档
 
 ## 🔧 配置说明
 
@@ -136,10 +163,41 @@ backend/
 ├── requirements.txt          # Python依赖
 ├── env.example               # 环境变量模板
 ├── data/                     # 对话导出数据目录
+│   └── generated_reports/    # Word文档导出目录
+├── test_docx_export.py      # Word导出功能测试
+├── test_dir_path.py         # 路径测试
+├── MULTI_TURN_CONVERSATION.md # 多轮对话说明
+├── SSL_ANALYSIS.md          # SSL分析文档
+├── SSL_SOLUTION.md          # SSL解决方案
 └── README.md                # 项目说明文档
 ```
 
+## 🆕 新功能详解
 
+### 📄 Word文档导出
+- 支持将研究结果和追问回答合并导出为.docx格式
+- 自动生成带时间戳的文件名
+- 保存在`data/generated_reports/`目录下
+
+### 🔒 SSL安全配置
+- 内置SSL配置模块，提高数据传输安全性
+- 支持HTTPS连接，保护API密钥和用户数据
+
+### 📚 多工具集成
+- **Yahoo Finance**: 获取最新财经新闻和股票数据
+- **Arxiv**: 搜索学术论文和研究报告
+- **Tavily**: 通用网页搜索和信息获取
+
+### 🇨🇳 国产大模型支持
+- 集成SiliconFlow平台
+- 使用Qwen3-235B大模型
+- 提供更丰富的AI能力选择
+
+### 📊 增强会话统计
+- 详细的处理时间统计
+- 错误轮次统计
+- 会话活动时间记录
+- 平均响应时间计算
 
 ## 🤝 贡献指南
 

@@ -86,6 +86,13 @@ pip install -r requirements.txt
 
 ### 4. 安装Pandoc (用于Word文档导出)
 
+#### 方法一：使用pypandoc_binary（推荐）
+```bash
+# 安装包含pandoc的完整包（推荐方式）
+pip install pypandoc_binary
+```
+
+#### 方法二：手动安装pandoc
 ```bash
 # macOS
 brew install pandoc
@@ -95,7 +102,18 @@ sudo apt-get install pandoc
 
 # Windows
 # 从 https://pandoc.org/installing.html 下载安装包
+
+# 然后安装pypandoc
+pip install pypandoc
 ```
+
+#### 方法三：仅安装pypandoc（需要手动安装pandoc）
+```bash
+# 如果你已经手动安装了pandoc，只需要安装pypandoc
+pip install pypandoc
+```
+
+> 💡 **推荐使用方法一**：`pypandoc_binary` 包含了pandoc二进制文件，无需额外安装pandoc，是最简单的安装方式。
 
 ### 5. 配置环境变量
 
@@ -164,11 +182,6 @@ backend/
 ├── env.example               # 环境变量模板
 ├── data/                     # 对话导出数据目录
 │   └── generated_reports/    # Word文档导出目录
-├── test_docx_export.py      # Word导出功能测试
-├── test_dir_path.py         # 路径测试
-├── MULTI_TURN_CONVERSATION.md # 多轮对话说明
-├── SSL_ANALYSIS.md          # SSL分析文档
-├── SSL_SOLUTION.md          # SSL解决方案
 └── README.md                # 项目说明文档
 ```
 
